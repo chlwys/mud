@@ -17,7 +17,7 @@ export function createInputSystem(network: NetworkLayer, phaser: PhaserLayer) {
 
   const clickSub = input.click$.subscribe((pointer) => {
     const tilePos = pixelCoordToTileCoord({ x: pointer.worldX, y: pointer.worldY }, tileWidth, tileHeight);
-    network.api.move(tilePos);
+    network.api.tryTo(tilePos);
   });
 
   world.registerDisposer(() => clickSub?.unsubscribe());

@@ -1,6 +1,11 @@
 import { createWorld } from "@latticexyz/recs";
 import { setupContracts, setupDevSystems } from "./setup";
-import { createActionSystem, defineCoordComponent } from "@latticexyz/std-client";
+import {
+  createActionSystem,
+  defineCoordComponent,
+  defineStringComponent,
+  defineBoolComponent,
+} from "@latticexyz/std-client";
 import { GameConfig } from "./config";
 import { Coord } from "@latticexyz/utils";
 import { BigNumber } from "ethers";
@@ -18,6 +23,9 @@ export async function createNetworkLayer(config: GameConfig) {
   // --- COMPONENTS -----------------------------------------------------------------
   const components = {
     Position: defineCoordComponent(world, { id: "Position", metadata: { contractId: "ember.component.position" } }),
+    Score: defineStringComponent(world, { id: "Score", metadata: { contractId: "ember.component.score" } }),
+    Adj: defineStringComponent(world, { id: "Adj", metadata: { contractId: "ember.component.adj" } }),
+    Mine: defineBoolComponent(world, { id: "Mine", metadata: { contractId: "ember.component.mine" } }),
   };
 
   // --- SETUP ----------------------------------------------------------------------
@@ -35,6 +43,14 @@ export async function createNetworkLayer(config: GameConfig) {
     systems["ember.system.move"].executeTyped(BigNumber.from(network.connectedAddress.get()), coord);
   }
 
+  function init() {
+    systems["ember.system.init"].executeTyped();
+  }
+
+  function tryTo(coord: Coord) {
+    systems["ember.system.try"].executeTyped(coord);
+  }
+
   // --- CONTEXT --------------------------------------------------------------------
   const context = {
     world,
@@ -45,7 +61,7 @@ export async function createNetworkLayer(config: GameConfig) {
     startSync,
     network,
     actions,
-    api: { move },
+    api: { move, init, tryTo },
     dev: setupDevSystems(world, encoders, systems),
   };
 

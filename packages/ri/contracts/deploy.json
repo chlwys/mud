@@ -1,7 +1,14 @@
 {
-  "components": ["PositionComponent"],
+  "components": [
+    "PositionComponent",
+    "MineComponent",
+    "AdjComponent",
+    "ScoreComponent"
+  ],
   "systems": [
     { "name": "ComponentDevSystem", "writeAccess": ["*"] },
-    { "name": "MoveSystem", "writeAccess": ["PositionComponent"] }
+    { "name": "MoveSystem", "writeAccess": ["PositionComponent"] },
+    { "name": "InitSystem", "writeAccess": ["PositionComponent", "MineComponent", "AdjComponent"] },
+    { "name": "TrySystem", "writeAccess": ["ScoreComponent"] }
   ]
 }
