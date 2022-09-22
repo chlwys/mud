@@ -1,7 +1,9 @@
 import { createWorld } from "@latticexyz/recs";
 import { setupContracts, setupDevSystems } from "./setup";
-import { createActionSystem } from "@latticexyz/std-client";
+import { createActionSystem, defineCoordComponent } from "@latticexyz/std-client";
 import { GameConfig } from "./config";
+import { Coord } from "@latticexyz/utils";
+import { BigNumber } from "ethers";
 
 /**
  * The Network layer is the lowest layer in the client architecture.
@@ -14,7 +16,9 @@ export async function createNetworkLayer(config: GameConfig) {
   const world = createWorld();
 
   // --- COMPONENTS -----------------------------------------------------------------
-  const components = {};
+  const components = {
+    Position: defineCoordComponent(world, { id: "Position", metadata: { contractId: "ember.component.position" } }),
+  };
 
   // --- SETUP ----------------------------------------------------------------------
   const { txQueue, systems, txReduced$, network, startSync, encoders } = await setupContracts(
@@ -27,6 +31,9 @@ export async function createNetworkLayer(config: GameConfig) {
   const actions = createActionSystem(world, txReduced$);
 
   // --- API ------------------------------------------------------------------------
+  function move(coord: Coord) {
+    systems["ember.system.move"].executeTyped(BigNumber.from(network.connectedAddress.get()), coord);
+  }
 
   // --- CONTEXT --------------------------------------------------------------------
   const context = {
@@ -38,7 +45,7 @@ export async function createNetworkLayer(config: GameConfig) {
     startSync,
     network,
     actions,
-    api: {},
+    api: { move },
     dev: setupDevSystems(world, encoders, systems),
   };
 
