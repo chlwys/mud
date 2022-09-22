@@ -1,8 +1,19 @@
 {
-  "components": ["PositionComponent", "CarriedByComponent"],
+  "components": [
+    "PositionComponent",
+    "CarriedByComponent",
+    "CollectableComponent",
+    "WalletComponent"
+  ],
   "systems": [
     { "name": "ComponentDevSystem", "writeAccess": ["*"] },
     { "name": "MoveSystem", "writeAccess": ["PositionComponent"] },
-    { "name": "CatchSystem", "writeAccess": ["PositionComponent", "CarriedByComponent"] }
+    { "name": "CatchSystem", "writeAccess": ["PositionComponent", "CarriedByComponent"] },
+    { "name": "CollectSystem", "writeAccess": [
+      "PositionComponent", "WalletComponent"
+    ]},
+    { "name": "SpawnCoinSystem", "writeAccess": [
+      "PositionComponent", "CollectableComponent"
+    ]}
   ]
 }

@@ -19,6 +19,11 @@ export async function createNetworkLayer(config: GameConfig) {
   const components = {
     Position: defineCoordComponent(world, { id: "Position", metadata: { contractId: "ember.component.position" } }),
     CarriedBy: defineStringComponent(world, { id: "CarriedBy", metadata: { contractId: "ember.component.carriedBy" } }),
+    Collectable: defineStringComponent(world, {
+      id: "Collectable",
+      metadata: { contractId: "ember.component.collectable" },
+    }),
+    Wallet: defineStringComponent(world, { id: "Wallet", metadata: { contractId: "ember.component.wallet" } }),
   };
 
   // --- SETUP ----------------------------------------------------------------------
@@ -32,12 +37,20 @@ export async function createNetworkLayer(config: GameConfig) {
   const actions = createActionSystem(world, txReduced$);
 
   // --- API ------------------------------------------------------------------------
-  function move(coord: Coord) {
-    systems["ember.system.move"].executeTyped(BigNumber.from(network.connectedAddress.get()), coord);
+  function move(id: string, coord: Coord) {
+    systems["ember.system.move"].executeTyped(BigNumber.from(id), coord);
   }
 
   function kidnap(coord: Coord) {
     systems["ember.system.catch"].executeTyped(coord);
+  }
+
+  function spawnCollectable(coord: Coord) {
+    systems["ember.system.spawnCoin"].executeTyped(coord);
+  }
+
+  function collect(id: string) {
+    systems["ember.system.collect"].executeTyped(BigNumber.from(id));
   }
 
   // --- CONTEXT --------------------------------------------------------------------
@@ -50,7 +63,7 @@ export async function createNetworkLayer(config: GameConfig) {
     startSync,
     network,
     actions,
-    api: { move, kidnap },
+    api: { move, kidnap, spawnCollectable, collect },
     dev: setupDevSystems(world, encoders, systems),
   };
 

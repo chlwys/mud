@@ -28,7 +28,7 @@ export function createInputSystem(network: NetworkLayer, phaser: PhaserLayer) {
       network.api.kidnap(tilePos);
     } else {
       // otherwise move
-      network.api.move(tilePos);
+      network.api.move("0", tilePos);
     }
   });
 
